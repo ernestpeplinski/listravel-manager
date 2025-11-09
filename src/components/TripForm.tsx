@@ -38,6 +38,7 @@ export const TripForm: React.FC<TripFormProps> = ({
   );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [dateError, setDateError] = useState<string>("");
   const [showPreview, setShowPreview] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
 
@@ -52,6 +53,32 @@ export const TripForm: React.FC<TripFormProps> = ({
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  const validateDates = (startDate: string, endDate: string) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (end < start) {
+        setDateError(
+          "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia"
+        );
+        return false;
+      }
+    }
+    setDateError("");
+    return true;
+  };
+
+  const handleStartDateChange = (value: string) => {
+    setFormData({ ...formData, startDate: value });
+    validateDates(value, formData.endDate);
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setFormData({ ...formData, endDate: value });
+    validateDates(formData.startDate, value);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +97,15 @@ export const TripForm: React.FC<TripFormProps> = ({
     setUploading(true);
 
     try {
+      // Validate dates
+      const startDate = new Date(formData.startDate);
+      const endDate = new Date(formData.endDate);
+
+      if (endDate < startDate) {
+        setUploading(false);
+        return;
+      }
+
       let imageUrl = trip?.imageUrl || "";
       let thumbnailUrl = trip?.thumbnailUrl || "";
 
@@ -176,9 +212,7 @@ export const TripForm: React.FC<TripFormProps> = ({
                   type="date"
                   id="startDate"
                   value={formData.startDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, startDate: e.target.value })
-                  }
+                  onChange={(e) => handleStartDateChange(e.target.value)}
                   required
                   disabled={uploading}
                 />
@@ -190,14 +224,13 @@ export const TripForm: React.FC<TripFormProps> = ({
                   type="date"
                   id="endDate"
                   value={formData.endDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endDate: e.target.value })
-                  }
+                  onChange={(e) => handleEndDateChange(e.target.value)}
                   required
                   disabled={uploading}
                 />
               </div>
             </div>
+            {dateError && <div className={styles.error}>{dateError}</div>}
             <div className={styles.formGroup}>
               <label htmlFor="price">Cena (PLN) *</label>
               <input
@@ -403,7 +436,7 @@ export const TripForm: React.FC<TripFormProps> = ({
               <button
                 type="submit"
                 className={styles.submitButton}
-                disabled={uploading}
+                disabled={uploading || !!dateError}
               >
                 {uploading
                   ? "Zapisywanie..."
@@ -454,7 +487,7 @@ export const TripForm: React.FC<TripFormProps> = ({
                     );
                   }
                 }}
-                disabled={uploading}
+                disabled={uploading || !!dateError}
               >
                 {uploading
                   ? "Zapisywanie..."
