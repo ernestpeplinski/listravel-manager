@@ -90,6 +90,16 @@ const TripManagement = () => {
       };
     }
   };
+
+  // Podział wycieczek na nadchodzące i archiwalne
+  const now = new Date();
+  const upcomingTrips = trips.filter(
+    (trip) => !trip.cancelled && trip.endDate >= now
+  );
+  const archivedTrips = trips.filter(
+    (trip) => trip.cancelled || trip.endDate < now
+  );
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -119,18 +129,53 @@ const TripManagement = () => {
             </p>
           </div>
         ) : (
-          <div className={styles.tripGrid}>
-            {trips.map((trip) => (
-              <TripCard
-                key={trip.id}
-                trip={trip}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteClick}
-                onDetails={handleDetailsClick}
-                onToggleCancel={handleToggleCancel}
-              />
-            ))}
-          </div>
+          <>
+            {/* Nadchodzące wycieczki */}
+            {upcomingTrips.length > 0 && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>Nadchodzące wycieczki</h3>
+                <div className={styles.tripGrid}>
+                  {upcomingTrips.map((trip) => (
+                    <TripCard
+                      key={trip.id}
+                      trip={trip}
+                      onEdit={handleEditClick}
+                      onDelete={handleDeleteClick}
+                      onDetails={handleDetailsClick}
+                      onToggleCancel={handleToggleCancel}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Archiwalne wycieczki */}
+            {archivedTrips.length > 0 && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>Archiwalne wycieczki</h3>
+                <div className={styles.tripGrid}>
+                  {archivedTrips.map((trip) => (
+                    <TripCard
+                      key={trip.id}
+                      trip={trip}
+                      onEdit={handleEditClick}
+                      onDelete={handleDeleteClick}
+                      onDetails={handleDetailsClick}
+                      onToggleCancel={handleToggleCancel}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {upcomingTrips.length === 0 && archivedTrips.length === 0 && (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyStateText}>
+                  Brak wycieczek. Dodaj pierwszą wycieczkę, aby rozpocząć.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
