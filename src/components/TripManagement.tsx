@@ -17,6 +17,7 @@ const TripManagement = () => {
   const [editingTrip, setEditingTrip] = useState<Trip | undefined>(undefined);
   const [detailsTrip, setDetailsTrip] = useState<Trip | null>(null);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "compact">("grid");
 
   const handleAddClick = () => {
     setEditingTrip(undefined);
@@ -142,6 +143,143 @@ const TripManagement = () => {
   const upcomingGrouped = groupTripsByMonth(upcomingTrips);
   const archivedGrouped = groupTripsByMonth(archivedTrips);
 
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString("pl-PL", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const renderCompactView = (trips: Trip[], monthKey: string) => {
+    return (
+      <div key={monthKey} className={styles.compactMonthGroup}>
+        <h4 className={styles.monthTitle}>{formatMonthYear(monthKey)}</h4>
+        <div className={styles.compactList}>
+          {trips.map((trip) => (
+            <div
+              key={trip.id}
+              className={`${styles.compactItem} ${
+                trip.cancelled ? styles.compactItemCancelled : ""
+              }`}
+            >
+              <div className={styles.compactMain}>
+                <div className={styles.compactImage}>
+                  <img
+                    src={trip.thumbnailUrl || trip.imageUrl}
+                    alt={trip.title}
+                  />
+                  {trip.cancelled && (
+                    <span className={styles.compactCancelledBadge}>
+                      ODWOŁANE
+                    </span>
+                  )}
+                </div>
+                <div className={styles.compactContent}>
+                  <h5 className={styles.compactTitle}>{trip.title}</h5>
+                  <div className={styles.compactDetails}>
+                    <span className={styles.compactDate}>
+                      {formatDate(trip.startDate)} – {formatDate(trip.endDate)}
+                    </span>
+                    <span className={styles.compactPrice}>
+                      {trip.price.toLocaleString("pl-PL")} zł
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className={styles.compactActions}>
+                <button
+                  className={styles.compactButton}
+                  onClick={() => handleDetailsClick(trip)}
+                  title="Szczegóły"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </button>
+                <button
+                  className={styles.compactButton}
+                  onClick={() => handleEditClick(trip)}
+                  title="Edytuj"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button
+                  className={styles.compactButton}
+                  onClick={() =>
+                    trip.id && handleToggleCancel(trip.id, !trip.cancelled)
+                  }
+                  title={trip.cancelled ? "Przywróć" : "Odwołaj"}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                  </svg>
+                </button>
+                <button
+                  className={`${styles.compactButton} ${styles.compactButtonDanger}`}
+                  onClick={() => trip.id && handleDeleteClick(trip.id)}
+                  title="Usuń"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -157,9 +295,79 @@ const TripManagement = () => {
       <div className={styles.contentWrapper}>
         <div className={styles.header}>
           <h2 className={styles.title}>Zarządzanie wycieczkami</h2>
-          <button className={styles.addButton} onClick={handleAddClick}>
-            + Dodaj wycieczkę
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              className={styles.viewModeButton}
+              onClick={() =>
+                setViewMode(viewMode === "grid" ? "compact" : "grid")
+              }
+              title={
+                viewMode === "grid" ? "Widok kompaktowy" : "Widok kafelkowy"
+              }
+            >
+              {viewMode === "grid" ? (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                  <span className={styles.viewModeText}>Kompaktowy</span>
+                </>
+              ) : (
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                  <span className={styles.viewModeText}>Kafelkowy</span>
+                </>
+              )}
+            </button>
+            <button className={styles.addButton} onClick={handleAddClick}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Dodaj wycieczkę
+            </button>
+          </div>
         </div>
 
         {error && <div className={styles.error}>{error}</div>}
@@ -176,27 +384,39 @@ const TripManagement = () => {
             {upcomingTrips.length > 0 && (
               <div className={styles.section}>
                 <h3 className={styles.sectionTitle}>Nadchodzące wycieczki</h3>
-                {Object.keys(upcomingGrouped)
-                  .sort()
-                  .map((monthKey) => (
-                    <div key={monthKey} className={styles.monthGroup}>
-                      <h4 className={styles.monthTitle}>
-                        {formatMonthYear(monthKey)}
-                      </h4>
-                      <div className={styles.tripGrid}>
-                        {upcomingGrouped[monthKey].map((trip) => (
-                          <TripCard
-                            key={trip.id}
-                            trip={trip}
-                            onEdit={handleEditClick}
-                            onDelete={handleDeleteClick}
-                            onDetails={handleDetailsClick}
-                            onToggleCancel={handleToggleCancel}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                {viewMode === "compact" ? (
+                  <>
+                    {Object.keys(upcomingGrouped)
+                      .sort()
+                      .map((monthKey) =>
+                        renderCompactView(upcomingGrouped[monthKey], monthKey)
+                      )}
+                  </>
+                ) : (
+                  <>
+                    {Object.keys(upcomingGrouped)
+                      .sort()
+                      .map((monthKey) => (
+                        <div key={monthKey} className={styles.monthGroup}>
+                          <h4 className={styles.monthTitle}>
+                            {formatMonthYear(monthKey)}
+                          </h4>
+                          <div className={styles.tripGrid}>
+                            {upcomingGrouped[monthKey].map((trip) => (
+                              <TripCard
+                                key={trip.id}
+                                trip={trip}
+                                onEdit={handleEditClick}
+                                onDelete={handleDeleteClick}
+                                onDetails={handleDetailsClick}
+                                onToggleCancel={handleToggleCancel}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </>
+                )}
               </div>
             )}
 
@@ -204,28 +424,41 @@ const TripManagement = () => {
             {archivedTrips.length > 0 && (
               <div className={styles.section}>
                 <h3 className={styles.sectionTitle}>Archiwalne wycieczki</h3>
-                {Object.keys(archivedGrouped)
-                  .sort()
-                  .reverse()
-                  .map((monthKey) => (
-                    <div key={monthKey} className={styles.monthGroup}>
-                      <h4 className={styles.monthTitle}>
-                        {formatMonthYear(monthKey)}
-                      </h4>
-                      <div className={styles.tripGrid}>
-                        {archivedGrouped[monthKey].map((trip) => (
-                          <TripCard
-                            key={trip.id}
-                            trip={trip}
-                            onEdit={handleEditClick}
-                            onDelete={handleDeleteClick}
-                            onDetails={handleDetailsClick}
-                            onToggleCancel={handleToggleCancel}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                {viewMode === "compact" ? (
+                  <>
+                    {Object.keys(archivedGrouped)
+                      .sort()
+                      .reverse()
+                      .map((monthKey) =>
+                        renderCompactView(archivedGrouped[monthKey], monthKey)
+                      )}
+                  </>
+                ) : (
+                  <>
+                    {Object.keys(archivedGrouped)
+                      .sort()
+                      .reverse()
+                      .map((monthKey) => (
+                        <div key={monthKey} className={styles.monthGroup}>
+                          <h4 className={styles.monthTitle}>
+                            {formatMonthYear(monthKey)}
+                          </h4>
+                          <div className={styles.tripGrid}>
+                            {archivedGrouped[monthKey].map((trip) => (
+                              <TripCard
+                                key={trip.id}
+                                trip={trip}
+                                onEdit={handleEditClick}
+                                onDelete={handleDeleteClick}
+                                onDetails={handleDetailsClick}
+                                onToggleCancel={handleToggleCancel}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </>
+                )}
               </div>
             )}
 
