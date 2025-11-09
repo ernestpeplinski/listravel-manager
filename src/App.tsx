@@ -1,55 +1,28 @@
+import { useState } from "react";
 import { useAuth } from "./hooks/useAuth";
 import Login from "./components/Login";
-import logo from "./assets/logo_1000x1000.png";
+import Navbar from "./components/Navbar";
+import TripManagement from "./components/TripManagement";
 
 function App() {
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("trips");
 
   if (!user) {
     return <Login />;
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <img
-            src={logo}
-            alt="Lis Travel Logo"
-            style={{ width: "50px", height: "50px", objectFit: "contain" }}
-          />
-          <h1 style={{ margin: 0 }}>Lis Travel Menadzer</h1>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <span>Witaj, {user.displayName || user.email}</span>
-          <button
-            onClick={logout}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-          >
-            Wyloguj
-          </button>
-        </div>
-      </div>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <Navbar
+        user={user}
+        onLogout={logout}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-      <div>
-        <p>
-          Tutaj będzie treść aplikacji dostępna dla zalogowanych użytkowników.
-        </p>
-      </div>
+      {/* Content area */}
+      <main>{activeTab === "trips" && <TripManagement />}</main>
     </div>
   );
 }
