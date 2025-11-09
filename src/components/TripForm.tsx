@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Trip, TripFormData } from "../types/trip";
 import { uploadToCloudinary } from "../utils/cloudinary";
+import { TripCard } from "./TripCard";
 import styles from "../styles/TripForm.module.scss";
 
 interface TripFormProps {
@@ -37,6 +38,8 @@ export const TripForm: React.FC<TripFormProps> = ({
   );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const handleFileChange = (
     file: File,
@@ -139,154 +142,344 @@ export const TripForm: React.FC<TripFormProps> = ({
   return (
     <div className={styles.overlay}>
       <div className={styles.modal}>
-        <h2>{trip ? "Edytuj wycieczkę" : "Dodaj nową wycieczkę"}</h2>
+        <div className={styles.header}>
+          <h2>{trip ? "Edytuj wycieczkę" : "Dodaj nową wycieczkę"}</h2>
+          <button
+            type="button"
+            className={styles.previewToggle}
+            onClick={() => setShowPreview(!showPreview)}
+          >
+            {showPreview ? "Pokaż formularz" : "Pokaż podgląd"}
+          </button>
+        </div>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {error && <div className={styles.error}>{error}</div>}
-
-          <div className={styles.formGroup}>
-            <label htmlFor="title">Tytuł *</label>
-            <input
-              type="text"
-              id="title"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              required
-              disabled={uploading}
-            />
-          </div>
-
-          <div className={styles.formRow}>
+        {!showPreview ? (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            {error && <div className={styles.error}>{error}</div>}
             <div className={styles.formGroup}>
-              <label htmlFor="startDate">Data rozpoczęcia *</label>
+              <label htmlFor="title">Tytuł *</label>
               <input
-                type="date"
-                id="startDate"
-                value={formData.startDate}
+                type="text"
+                id="title"
+                value={formData.title}
                 onChange={(e) =>
-                  setFormData({ ...formData, startDate: e.target.value })
+                  setFormData({ ...formData, title: e.target.value })
                 }
                 required
                 disabled={uploading}
               />
             </div>
+            <div className={styles.formRow}>
+              <div className={styles.formGroup}>
+                <label htmlFor="startDate">Data rozpoczęcia *</label>
+                <input
+                  type="date"
+                  id="startDate"
+                  value={formData.startDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startDate: e.target.value })
+                  }
+                  required
+                  disabled={uploading}
+                />
+              </div>
 
+              <div className={styles.formGroup}>
+                <label htmlFor="endDate">Data zakończenia *</label>
+                <input
+                  type="date"
+                  id="endDate"
+                  value={formData.endDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, endDate: e.target.value })
+                  }
+                  required
+                  disabled={uploading}
+                />
+              </div>
+            </div>
             <div className={styles.formGroup}>
-              <label htmlFor="endDate">Data zakończenia *</label>
+              <label htmlFor="price">Cena (PLN) *</label>
               <input
-                type="date"
-                id="endDate"
-                value={formData.endDate}
+                type="number"
+                id="price"
+                value={formData.price}
                 onChange={(e) =>
-                  setFormData({ ...formData, endDate: e.target.value })
+                  setFormData({
+                    ...formData,
+                    price: parseFloat(e.target.value),
+                  })
                 }
+                min="0"
+                step="0.01"
                 required
                 disabled={uploading}
               />
             </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="price">Cena (PLN) *</label>
-            <input
-              type="number"
-              id="price"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData({ ...formData, price: parseFloat(e.target.value) })
-              }
-              min="0"
-              step="0.01"
-              required
-              disabled={uploading}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="description">Opis *</label>
-            <textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={4}
-              required
-              disabled={uploading}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="image">Zdjęcie główne *</label>
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              onChange={handleImageChange}
-              disabled={uploading}
-            />
-            {imagePreview && (
-              <div className={styles.imagePreview}>
-                <img src={imagePreview} alt="Podgląd głównego zdjęcia" />
-              </div>
-            )}
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="thumbnail">Miniaturka *</label>
-            <input
-              type="file"
-              id="thumbnail"
-              accept="image/*"
-              onChange={handleThumbnailChange}
-              disabled={uploading}
-            />
-            {thumbnailPreview && (
-              <div className={styles.imagePreview}>
-                <img src={thumbnailPreview} alt="Podgląd miniaturki" />
-              </div>
-            )}
-          </div>
-
-          <div className={styles.formGroup}>
-            <label className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={formData.cancelled}
+            <div className={styles.formGroup}>
+              <label htmlFor="description">Opis</label>
+              <textarea
+                id="description"
+                value={formData.description}
                 onChange={(e) =>
-                  setFormData({ ...formData, cancelled: e.target.checked })
+                  setFormData({ ...formData, description: e.target.value })
                 }
+                rows={4}
                 disabled={uploading}
               />
-              <span>Wycieczka odwołana</span>
-            </label>
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="image">
+                Zdjęcie główne *{" "}
+                <span className={styles.labelHint}>
+                  (Szczegóły/Plan wycieczki)
+                </span>
+              </label>
+              {!imagePreview ? (
+                <input
+                  type="file"
+                  id="image"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={uploading}
+                />
+              ) : (
+                <div className={styles.imagePreview}>
+                  <img src={imagePreview} alt="Podgląd głównego zdjęcia" />
+                  <button
+                    type="button"
+                    className={styles.removeImageButton}
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview("");
+                      // Reset file input
+                      const fileInput = document.getElementById(
+                        "image"
+                      ) as HTMLInputElement;
+                      if (fileInput) fileInput.value = "";
+                    }}
+                    disabled={uploading}
+                    aria-label="Usuń zdjęcie główne"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                  <label htmlFor="image" className={styles.changeImageButton}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Zmień zdjęcie
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    disabled={uploading}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              )}
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="thumbnail">Miniaturka *</label>
+              {!thumbnailPreview ? (
+                <input
+                  type="file"
+                  id="thumbnail"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  disabled={uploading}
+                />
+              ) : (
+                <div className={styles.imagePreview}>
+                  <img src={thumbnailPreview} alt="Podgląd miniaturki" />
+                  <button
+                    type="button"
+                    className={styles.removeImageButton}
+                    onClick={() => {
+                      setThumbnailFile(null);
+                      setThumbnailPreview("");
+                      // Reset file input
+                      const fileInput = document.getElementById(
+                        "thumbnail"
+                      ) as HTMLInputElement;
+                      if (fileInput) fileInput.value = "";
+                    }}
+                    disabled={uploading}
+                    aria-label="Usuń miniaturkę"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                  <label
+                    htmlFor="thumbnail"
+                    className={styles.changeImageButton}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Zmień miniaturkę
+                  </label>
+                  <input
+                    type="file"
+                    id="thumbnail"
+                    accept="image/*"
+                    onChange={handleThumbnailChange}
+                    disabled={uploading}
+                    style={{ display: "none" }}
+                  />
+                </div>
+              )}
+            </div>{" "}
+            <div className={styles.formGroup}>
+              <label className={styles.checkbox}>
+                <input
+                  type="checkbox"
+                  checked={formData.cancelled}
+                  onChange={(e) =>
+                    setFormData({ ...formData, cancelled: e.target.checked })
+                  }
+                  disabled={uploading}
+                />
+                <span>Wycieczka odwołana</span>
+              </label>
+            </div>
+            <div className={styles.actions}>
+              <button
+                type="button"
+                onClick={onCancel}
+                className={styles.cancelButton}
+                disabled={uploading}
+              >
+                Anuluj
+              </button>
+              <button
+                type="submit"
+                className={styles.submitButton}
+                disabled={uploading}
+              >
+                {uploading
+                  ? "Zapisywanie..."
+                  : trip
+                  ? "Zapisz zmiany"
+                  : "Dodaj wycieczkę"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className={styles.preview}>
+            <TripCard
+              trip={{
+                title: formData.title || "Tytuł wycieczki",
+                description: formData.description,
+                startDate: formData.startDate
+                  ? new Date(formData.startDate)
+                  : new Date(),
+                endDate: formData.endDate
+                  ? new Date(formData.endDate)
+                  : new Date(),
+                price: formData.price || 0,
+                imageUrl: imagePreview,
+                thumbnailUrl: thumbnailPreview,
+                cancelled: formData.cancelled,
+              }}
+              onDetails={() => setShowImageModal(true)}
+              previewMode={true}
+            />
+            <div className={styles.actions}>
+              <button
+                type="button"
+                onClick={onCancel}
+                className={styles.cancelButton}
+              >
+                Anuluj
+              </button>
+              <button
+                type="button"
+                className={styles.submitButton}
+                onClick={() => {
+                  const form = document.querySelector(
+                    `.${styles.form}`
+                  ) as HTMLFormElement;
+                  if (form) {
+                    form.dispatchEvent(
+                      new Event("submit", { cancelable: true, bubbles: true })
+                    );
+                  }
+                }}
+                disabled={uploading}
+              >
+                {uploading
+                  ? "Zapisywanie..."
+                  : trip
+                  ? "Zapisz zmiany"
+                  : "Dodaj wycieczkę"}
+              </button>
+            </div>
           </div>
-
-          <div className={styles.actions}>
-            <button
-              type="button"
-              onClick={onCancel}
-              className={styles.cancelButton}
-              disabled={uploading}
-            >
-              Anuluj
-            </button>
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={uploading}
-            >
-              {uploading
-                ? "Zapisywanie..."
-                : trip
-                ? "Zapisz zmiany"
-                : "Dodaj wycieczkę"}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
+
+      {/* Modal with full-size image */}
+      {showImageModal && imagePreview && (
+        <div
+          className={styles.imageModal}
+          onClick={() => setShowImageModal(false)}
+        >
+          <img
+            src={imagePreview}
+            alt={formData.title || "Szczegóły"}
+            className={styles.imageModalContent}
+          />
+        </div>
+      )}
     </div>
   );
 };

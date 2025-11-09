@@ -21,11 +21,38 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  gap: 1rem;
+  flex-wrap: wrap;
 
   h2 {
-    margin: 0 0 clamp(1.25rem, 3vw, 2rem);
+    margin: 0;
     font-size: clamp(1.25rem, 4vw, 1.75rem);
     color: #333;
+  }
+}
+
+.previewToggle {
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 160ms ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
   }
 }
 
@@ -53,6 +80,12 @@
     font-weight: 500;
     color: #555;
     font-size: 0.95rem;
+  }
+
+  .labelHint {
+    font-weight: 400;
+    color: #888;
+    font-size: 0.85rem;
   }
 
   input,
@@ -93,16 +126,89 @@
 
 .imagePreview {
   margin-top: 0.75rem;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e0e0e0;
+  border: 2px solid #e0e0e0;
+  position: relative;
+  background: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #4a90e2;
+  }
 
   img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 300px;
-    object-fit: cover;
+    min-height: 200px;
+    max-height: 400px;
+    object-fit: contain;
+    padding: 0.5rem;
+  }
+}
+
+.removeImageButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.95);
+  border: 2px solid white;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &:hover:not(:disabled) {
+    background: rgb(185, 28, 28);
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.changeImageButton {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: rgba(74, 144, 226, 0.95);
+  color: white;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background: rgb(53, 122, 189);
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -172,4 +278,41 @@
   &:hover:not(:disabled) {
     background-color: #357abd;
   }
+}
+
+// Preview styles
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+
+  // Wrapper to ensure TripCard has the same width as in grid
+  > * {
+    max-width: 320px;
+    width: 100%;
+  }
+}
+
+// Image modal
+.imageModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  cursor: pointer;
+  padding: 2rem;
+}
+
+.imageModalContent {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
 }

@@ -196,7 +196,8 @@
 }
 
 .tripPrice {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   font-weight: 700;
   margin: 0.35rem 0 0.9rem;
   color: #e96500;
@@ -287,46 +288,25 @@
   }
 }
 
-/* Modal */
-.modalBackdrop {
+// Image modal
+.imageModal {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-}
-
-.modalContent {
-  background: #fff;
-  border-radius: 12px;
-  max-width: min(96vw, 1200px);
-  max-height: 90vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
-
-.modalImg {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: calc(90vh - 56px);
-  object-fit: contain;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-}
-
-.modalClose {
-  background: transparent;
-  border: none;
-  font-size: 1.25rem;
+  z-index: 2000;
   cursor: pointer;
+  padding: 2rem;
+}
+
+.imageModalContent {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
 }

@@ -143,32 +143,12 @@ const TripManagement = () => {
       )}
 
       {detailsTrip && (
-        <div
-          className={styles.modalBackdrop}
-          onClick={() => setDetailsTrip(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHeader}>
-              <strong>{detailsTrip.title}</strong>
-              <button
-                className={styles.modalClose}
-                aria-label="Zamknij"
-                onClick={() => setDetailsTrip(null)}
-              >
-                ×
-              </button>
-            </div>
-            <img
-              className={styles.modalImg}
-              src={detailsTrip.imageUrl}
-              alt={detailsTrip.title}
-            />
-          </div>
+        <div className={styles.imageModal} onClick={() => setDetailsTrip(null)}>
+          <img
+            src={detailsTrip.imageUrl}
+            alt={detailsTrip.title}
+            className={styles.imageModalContent}
+          />
         </div>
       )}
 
