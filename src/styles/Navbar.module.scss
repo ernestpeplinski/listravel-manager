@@ -1,0 +1,114 @@
+.navbar {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 12px 15px;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(16px, 4vw, 24px);
+  white-space: nowrap;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.userEmail {
+  font-size: clamp(11px, 2.5vw, 14px);
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+  display: none;
+}
+
+.logoutButton {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(12px, 2.5vw, 14px);
+  transition: background-color 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #c82333;
+  }
+}
+
+.navSection {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  padding: 0 20px;
+}
+
+.navContainer {
+  display: flex;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: clamp(14px, 3vw, 16px);
+  cursor: pointer;
+  color: #555;
+  font-weight: 400;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &.active {
+    color: #4285f4;
+    font-weight: 600;
+    border-bottom-color: #4285f4;
+  }
+}
+
+@media (min-width: 480px) {
+  .userEmail {
+    display: block;
+  }
+}

@@ -2,6 +2,7 @@ import { signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 import { isAuthorizedFirestore } from "../utils/firestoreAuth";
 import logo from "../assets/logo_1000x1000.png";
+import styles from "../styles/Login.module.scss";
 
 const Login = () => {
   const handleGoogleLogin = async () => {
@@ -26,47 +27,13 @@ const Login = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-      }}
-    >
-      <img
-        src={logo}
-        alt="Lis Travel Logo"
-        style={{
-          width: "120px",
-          height: "120px",
-          objectFit: "contain",
-          marginBottom: "20px",
-        }}
-      />
-      <h1>Lis Travel Menadzer</h1>
-      <p style={{ marginTop: "20px", marginBottom: "30px" }}>
-        Zaloguj się, aby uzyskać dostęp
-      </p>
-      <button
-        onClick={handleGoogleLogin}
-        style={{
-          padding: "12px 24px",
-          fontSize: "16px",
-          backgroundColor: "#4285f4",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-        }}
-      >
+    <div className={styles.container}>
+      <img src={logo} alt="Lis Travel Logo" className={styles.logo} />
+      <h1 className={styles.title}>Lis Travel Menadzer</h1>
+      <p className={styles.subtitle}>Zaloguj się, aby uzyskać dostęp</p>
+      <button onClick={handleGoogleLogin} className={styles.loginButton}>
         <svg
-          width="18"
-          height="18"
+          className={styles.googleIcon}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 48 48"
         >

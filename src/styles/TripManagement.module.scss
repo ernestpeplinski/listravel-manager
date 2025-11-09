@@ -1,0 +1,77 @@
+.container {
+  padding: 15px;
+}
+
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(20px, 5vw, 28px);
+  color: #333;
+}
+
+.addButton {
+  padding: 12px 24px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: #3367d6;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.emptyStateText {
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: #6c757d;
+  margin: 0;
+}
+
+.tripGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 15px;
+}
+
+.tripCard {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  h3 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  p {
+    margin: 8px 0;
+    color: #666;
+  }
+}
