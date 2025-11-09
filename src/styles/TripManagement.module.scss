@@ -39,6 +39,22 @@
   }
 }
 
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: clamp(14px, 3.5vw, 18px);
+  color: #6c757d;
+}
+
+.error {
+  background-color: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #fcc;
+}
+
 .emptyState {
   text-align: center;
   padding: 40px 20px;
@@ -56,22 +72,130 @@
 .tripGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-  gap: 15px;
+  gap: 20px;
 }
 
 .tripCard {
   background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
 
-  h3 {
-    margin-top: 0;
-    color: #333;
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
-  p {
-    margin: 8px 0;
-    color: #666;
+  &.cancelled {
+    opacity: 0.7;
+
+    .tripImage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.tripImage {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.cancelledBadge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.tripContent {
+  padding: 20px;
+  flex: 1;
+}
+
+.tripTitle {
+  margin: 0 0 12px;
+  font-size: clamp(16px, 4vw, 20px);
+  color: #333;
+  font-weight: 600;
+}
+
+.tripDate {
+  margin: 0 0 8px;
+  font-size: clamp(13px, 3vw, 14px);
+  color: #666;
+  font-weight: 500;
+}
+
+.tripDescription {
+  margin: 0 0 12px;
+  font-size: clamp(13px, 3vw, 14px);
+  color: #555;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tripPrice {
+  margin: 0;
+  font-size: clamp(16px, 4vw, 18px);
+  color: #4285f4;
+  font-weight: 700;
+}
+
+.tripActions {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+.editButton,
+.deleteButton {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: clamp(13px, 3vw, 14px);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.editButton {
+  background-color: #f0f0f0;
+  color: #333;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+.deleteButton {
+  background-color: #fee;
+  color: #c33;
+
+  &:hover {
+    background-color: #fdd;
   }
 }
