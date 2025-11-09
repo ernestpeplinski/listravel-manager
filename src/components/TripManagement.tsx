@@ -47,6 +47,16 @@ const TripManagement = () => {
     }
   };
 
+  const handleToggleCancel = async (tripId: string, cancelled: boolean) => {
+    const message = cancelled
+      ? "Czy na pewno chcesz odwołać tę wycieczkę? Zostanie oznaczona jako odwołana."
+      : "Czy na pewno chcesz przywrócić tę wycieczkę?";
+
+    if (window.confirm(message)) {
+      await updateTrip(tripId, { cancelled });
+    }
+  };
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -84,6 +94,7 @@ const TripManagement = () => {
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
                 onDetails={handleDetailsClick}
+                onToggleCancel={handleToggleCancel}
               />
             ))}
           </div>

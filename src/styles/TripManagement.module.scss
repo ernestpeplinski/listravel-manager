@@ -232,11 +232,14 @@
   border-top: 1px solid #e7e7e7;
   padding-top: 1rem;
   margin-top: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .editButton,
+.cancelButton,
 .deleteButton {
   flex: 1;
+  min-width: 100px;
   padding: 0.6rem 1rem;
   border: none;
   border-radius: 8px;
@@ -260,6 +263,15 @@
 
   &:hover {
     background: #e96500;
+  }
+}
+
+.cancelButton {
+  background: #6366f1;
+  color: #fff;
+
+  &:hover {
+    background: #4f46e5;
   }
 }
 

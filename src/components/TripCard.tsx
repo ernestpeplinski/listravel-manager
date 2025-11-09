@@ -6,6 +6,7 @@ interface TripCardProps {
   onEdit: (trip: Trip) => void;
   onDelete: (tripId: string) => void;
   onDetails: (trip: Trip) => void;
+  onToggleCancel: (tripId: string, cancelled: boolean) => void;
 }
 
 export const TripCard = ({
@@ -13,6 +14,7 @@ export const TripCard = ({
   onEdit,
   onDelete,
   onDetails,
+  onToggleCancel,
 }: TripCardProps) => {
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString("pl-PL", {
@@ -96,6 +98,27 @@ export const TripCard = ({
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
           Edytuj
+        </button>
+        <button
+          className={styles.cancelButton}
+          onClick={() => trip.id && onToggleCancel(trip.id, !trip.cancelled)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          {trip.cancelled ? "Przywróć" : "Odwołaj"}
         </button>
         <button
           className={styles.deleteButton}
