@@ -94,8 +94,11 @@
   }
 
   &.cancelled {
-    opacity: 0.65;
-    filter: grayscale(0.8);
+    .tripImage,
+    .tripContent {
+      opacity: 0.65;
+      filter: grayscale(0.8);
+    }
 
     &:hover {
       transform: none;

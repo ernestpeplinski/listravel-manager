@@ -2,14 +2,21 @@ import { useState } from "react";
 import { useTrips } from "../hooks/useTrips";
 import { TripForm } from "./TripForm";
 import { TripCard } from "./TripCard";
+import { ConfirmDialog } from "./ConfirmDialog";
 import type { Trip } from "../types/trip";
 import styles from "../styles/TripManagement.module.scss";
+
+type ConfirmAction =
+  | { type: "delete"; tripId: string }
+  | { type: "cancel"; tripId: string; cancelled: boolean }
+  | null;
 
 const TripManagement = () => {
   const { trips, loading, error, addTrip, updateTrip, deleteTrip } = useTrips();
   const [showForm, setShowForm] = useState(false);
   const [editingTrip, setEditingTrip] = useState<Trip | undefined>(undefined);
   const [detailsTrip, setDetailsTrip] = useState<Trip | null>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
 
   const handleAddClick = () => {
     setEditingTrip(undefined);
@@ -38,25 +45,51 @@ const TripManagement = () => {
   };
 
   const handleDeleteClick = async (tripId: string) => {
-    if (
-      window.confirm(
-        "Czy na pewno chcesz usunąć tę wycieczkę? Ta operacja jest nieodwracalna."
-      )
-    ) {
-      await deleteTrip(tripId);
-    }
+    setConfirmAction({ type: "delete", tripId });
   };
 
   const handleToggleCancel = async (tripId: string, cancelled: boolean) => {
-    const message = cancelled
-      ? "Czy na pewno chcesz odwołać tę wycieczkę? Zostanie oznaczona jako odwołana."
-      : "Czy na pewno chcesz przywrócić tę wycieczkę?";
-
-    if (window.confirm(message)) {
-      await updateTrip(tripId, { cancelled });
-    }
+    setConfirmAction({ type: "cancel", tripId, cancelled });
   };
 
+  const handleConfirm = async () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.type === "delete") {
+      await deleteTrip(confirmAction.tripId);
+    } else if (confirmAction.type === "cancel") {
+      await updateTrip(confirmAction.tripId, {
+        cancelled: confirmAction.cancelled,
+      });
+    }
+
+    setConfirmAction(null);
+  };
+
+  const getDialogProps = () => {
+    if (!confirmAction) return null;
+
+    if (confirmAction.type === "delete") {
+      return {
+        title: "Usuń wycieczkę",
+        message:
+          "Czy na pewno chcesz usunąć tę wycieczkę? Ta operacja jest nieodwracalna.",
+        confirmText: "Usuń",
+        variant: "danger" as const,
+      };
+    } else {
+      return {
+        title: confirmAction.cancelled
+          ? "Odwołaj wycieczkę"
+          : "Przywróć wycieczkę",
+        message: confirmAction.cancelled
+          ? "Czy na pewno chcesz odwołać tę wycieczkę? Zostanie oznaczona jako odwołana."
+          : "Czy na pewno chcesz przywrócić tę wycieczkę?",
+        confirmText: confirmAction.cancelled ? "Odwołaj" : "Przywróć",
+        variant: "warning" as const,
+      };
+    }
+  };
   if (loading) {
     return (
       <div className={styles.container}>
@@ -137,6 +170,15 @@ const TripManagement = () => {
             />
           </div>
         </div>
+      )}
+
+      {confirmAction && (
+        <ConfirmDialog
+          isOpen={true}
+          {...getDialogProps()!}
+          onConfirm={handleConfirm}
+          onCancel={() => setConfirmAction(null)}
+        />
       )}
     </div>
   );
