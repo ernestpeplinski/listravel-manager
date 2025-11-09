@@ -231,11 +231,51 @@
 
 .tripActions {
   display: flex;
+  flex-direction: column;
   gap: 12px;
   padding: 0 1rem 1rem;
   border-top: 1px solid #e7e7e7;
   padding-top: 1rem;
   margin-top: 0.5rem;
+}
+
+.tripMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metaLabel {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metaValue {
+  color: #374151;
+  font-weight: 500;
+}
+
+.metaBy {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
 }
 

@@ -10,6 +10,8 @@ export interface Trip {
   cancelled?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 export interface TripFormData {

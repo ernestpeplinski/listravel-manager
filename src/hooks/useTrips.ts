@@ -10,7 +10,7 @@ import {
   orderBy,
   Timestamp,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import type { Trip } from "../types/trip";
 
 export const useTrips = () => {
@@ -53,12 +53,17 @@ export const useTrips = () => {
   // Add new trip
   const addTrip = async (trip: Omit<Trip, "id">): Promise<string | null> => {
     try {
+      const currentUser = auth.currentUser;
+      const userEmail = currentUser?.email || "Nieznany użytkownik";
+
       const tripData = {
         ...trip,
         startDate: Timestamp.fromDate(trip.startDate),
         endDate: Timestamp.fromDate(trip.endDate),
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
+        createdBy: userEmail,
+        updatedBy: userEmail,
       };
 
       const docRef = await addDoc(collection(db, "trips"), tripData);
@@ -77,10 +82,14 @@ export const useTrips = () => {
     updates: Partial<Omit<Trip, "id">>
   ): Promise<boolean> => {
     try {
+      const currentUser = auth.currentUser;
+      const userEmail = currentUser?.email || "Nieznany użytkownik";
+
       const tripRef = doc(db, "trips", tripId);
       const updateData: Record<string, unknown> = {
         ...updates,
         updatedAt: Timestamp.now(),
+        updatedBy: userEmail,
       };
 
       if (updates.startDate) {
