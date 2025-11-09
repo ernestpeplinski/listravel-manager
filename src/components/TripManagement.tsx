@@ -93,12 +93,54 @@ const TripManagement = () => {
 
   // Podział wycieczek na nadchodzące i archiwalne
   const now = new Date();
-  const upcomingTrips = trips.filter(
-    (trip) => !trip.cancelled && trip.endDate >= now
-  );
-  const archivedTrips = trips.filter(
-    (trip) => trip.cancelled || trip.endDate < now
-  );
+  const upcomingTrips = trips
+    .filter((trip) => !trip.cancelled && trip.endDate >= now)
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+
+  const archivedTrips = trips
+    .filter((trip) => trip.cancelled || trip.endDate < now)
+    .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+
+  // Grupowanie wycieczek według miesiąca i roku
+  const groupTripsByMonth = (trips: Trip[]) => {
+    const groups: { [key: string]: Trip[] } = {};
+
+    trips.forEach((trip) => {
+      const date = trip.startDate;
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      if (!groups[key]) {
+        groups[key] = [];
+      }
+      groups[key].push(trip);
+    });
+
+    return groups;
+  };
+
+  const formatMonthYear = (key: string) => {
+    const [year, month] = key.split("-");
+    const monthNames = [
+      "Styczeń",
+      "Luty",
+      "Marzec",
+      "Kwiecień",
+      "Maj",
+      "Czerwiec",
+      "Lipiec",
+      "Sierpień",
+      "Wrzesień",
+      "Październik",
+      "Listopad",
+      "Grudzień",
+    ];
+    return `${monthNames[parseInt(month) - 1]} ${year}`;
+  };
+
+  const upcomingGrouped = groupTripsByMonth(upcomingTrips);
+  const archivedGrouped = groupTripsByMonth(archivedTrips);
 
   if (loading) {
     return (
@@ -134,18 +176,27 @@ const TripManagement = () => {
             {upcomingTrips.length > 0 && (
               <div className={styles.section}>
                 <h3 className={styles.sectionTitle}>Nadchodzące wycieczki</h3>
-                <div className={styles.tripGrid}>
-                  {upcomingTrips.map((trip) => (
-                    <TripCard
-                      key={trip.id}
-                      trip={trip}
-                      onEdit={handleEditClick}
-                      onDelete={handleDeleteClick}
-                      onDetails={handleDetailsClick}
-                      onToggleCancel={handleToggleCancel}
-                    />
+                {Object.keys(upcomingGrouped)
+                  .sort()
+                  .map((monthKey) => (
+                    <div key={monthKey} className={styles.monthGroup}>
+                      <h4 className={styles.monthTitle}>
+                        {formatMonthYear(monthKey)}
+                      </h4>
+                      <div className={styles.tripGrid}>
+                        {upcomingGrouped[monthKey].map((trip) => (
+                          <TripCard
+                            key={trip.id}
+                            trip={trip}
+                            onEdit={handleEditClick}
+                            onDelete={handleDeleteClick}
+                            onDetails={handleDetailsClick}
+                            onToggleCancel={handleToggleCancel}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
-                </div>
               </div>
             )}
 
@@ -153,18 +204,28 @@ const TripManagement = () => {
             {archivedTrips.length > 0 && (
               <div className={styles.section}>
                 <h3 className={styles.sectionTitle}>Archiwalne wycieczki</h3>
-                <div className={styles.tripGrid}>
-                  {archivedTrips.map((trip) => (
-                    <TripCard
-                      key={trip.id}
-                      trip={trip}
-                      onEdit={handleEditClick}
-                      onDelete={handleDeleteClick}
-                      onDetails={handleDetailsClick}
-                      onToggleCancel={handleToggleCancel}
-                    />
+                {Object.keys(archivedGrouped)
+                  .sort()
+                  .reverse()
+                  .map((monthKey) => (
+                    <div key={monthKey} className={styles.monthGroup}>
+                      <h4 className={styles.monthTitle}>
+                        {formatMonthYear(monthKey)}
+                      </h4>
+                      <div className={styles.tripGrid}>
+                        {archivedGrouped[monthKey].map((trip) => (
+                          <TripCard
+                            key={trip.id}
+                            trip={trip}
+                            onEdit={handleEditClick}
+                            onDelete={handleDeleteClick}
+                            onDetails={handleDetailsClick}
+                            onToggleCancel={handleToggleCancel}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
-                </div>
               </div>
             )}
 

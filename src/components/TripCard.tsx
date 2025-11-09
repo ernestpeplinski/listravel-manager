@@ -42,7 +42,57 @@ export const TripCard = ({
     return ms;
   };
 
+  const daysUntilTrip = (startDate: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const diffTime = start.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const isTripOngoing = (startDate: Date, endDate: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(0, 0, 0, 0);
+    return today >= start && today <= end;
+  };
+
+  const formatDaysUntil = (days: number) => {
+    if (days < 0) return null;
+    if (days === 0) return "Dziś";
+    if (days === 1) return "Jutro";
+    if (days < 7) return `Za ${days} dni`;
+
+    const weeks = Math.floor(days / 7);
+    const remainingDays = days % 7;
+
+    let weeksText = "";
+    if (weeks === 1) {
+      weeksText = "1 tydzień";
+    } else if (weeks < 5) {
+      weeksText = `${weeks} tygodnie`;
+    } else {
+      weeksText = `${weeks} tygodni`;
+    }
+
+    if (remainingDays === 0) {
+      return `Za ${days} dni (${weeksText})`;
+    } else if (remainingDays === 1) {
+      return `Za ${days} dni (${weeksText}, 1 dzień)`;
+    } else {
+      return `Za ${days} dni (${weeksText}, ${remainingDays} dni)`;
+    }
+  };
+
   const days = daysBetween(trip.startDate, trip.endDate);
+  const daysUntil = daysUntilTrip(trip.startDate);
+  const isOngoing = isTripOngoing(trip.startDate, trip.endDate);
+  const daysUntilText = isOngoing ? null : formatDaysUntil(daysUntil);
   const tripId = "id" in trip ? trip.id : undefined;
 
   return (
@@ -97,6 +147,22 @@ export const TripCard = ({
       {!previewMode && (
         <div className={styles.tripActions}>
           <div className={styles.tripMeta}>
+            {isOngoing && !trip.cancelled && (
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Status:</span>
+                <span className={styles.metaValueOngoing}>
+                  W trakcie trwania
+                </span>
+              </div>
+            )}
+            {daysUntilText && !trip.cancelled && (
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Rozpoczęcie:</span>
+                <span className={styles.metaValueUpcoming}>
+                  {daysUntilText}
+                </span>
+              </div>
+            )}
             {trip.createdAt && (
               <div className={styles.metaItem}>
                 <span className={styles.metaLabel}>Utworzono:</span>

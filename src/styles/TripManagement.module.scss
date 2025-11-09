@@ -87,6 +87,23 @@
   border-bottom: 2px solid #ff7000;
 }
 
+.monthGroup {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.monthTitle {
+  font-size: clamp(16px, 3.5vw, 20px);
+  color: #555;
+  margin: 0 0 1rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+  border-left: 4px solid #ff7000;
+}
+
 .tripGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 320px));
@@ -283,6 +300,16 @@
 .metaValue {
   color: #374151;
   font-weight: 500;
+}
+
+.metaValueOngoing {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.metaValueUpcoming {
+  color: #ff7000;
+  font-weight: 600;
 }
 
 .metaBy {
