@@ -231,6 +231,22 @@ export const TripForm: React.FC<TripFormProps> = ({
               </div>
             </div>
             {dateError && <div className={styles.error}>{dateError}</div>}
+            {formData.startDate && formData.endDate && !dateError && (
+              <div className={styles.durationInfo}>
+                Łączny czas trwania:{" "}
+                {(() => {
+                  const start = new Date(formData.startDate);
+                  const end = new Date(formData.endDate);
+                  const days =
+                    Math.ceil(
+                      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+                    ) + 1;
+                  return `${days} ${
+                    days === 1 ? "dzień" : days < 5 ? "dni" : "dni"
+                  }`;
+                })()}
+              </div>
+            )}
             <div className={styles.formGroup}>
               <label htmlFor="price">Cena (PLN) *</label>
               <input
