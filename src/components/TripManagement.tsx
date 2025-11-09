@@ -9,6 +9,7 @@ const TripManagement = () => {
   const { trips, loading, error, addTrip, updateTrip, deleteTrip } = useTrips();
   const [showForm, setShowForm] = useState(false);
   const [editingTrip, setEditingTrip] = useState<Trip | undefined>(undefined);
+  const [detailsTrip, setDetailsTrip] = useState<Trip | null>(null);
 
   const handleAddClick = () => {
     setEditingTrip(undefined);
@@ -18,6 +19,10 @@ const TripManagement = () => {
   const handleEditClick = (trip: Trip) => {
     setEditingTrip(trip);
     setShowForm(true);
+  };
+
+  const handleDetailsClick = (trip: Trip) => {
+    setDetailsTrip(trip);
   };
 
   const handleFormSubmit = async (tripData: Omit<Trip, "id">) => {
@@ -78,6 +83,7 @@ const TripManagement = () => {
                 trip={trip}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
+                onDetails={handleDetailsClick}
               />
             ))}
           </div>
@@ -90,6 +96,36 @@ const TripManagement = () => {
           onSubmit={handleFormSubmit}
           onCancel={() => setShowForm(false)}
         />
+      )}
+
+      {detailsTrip && (
+        <div
+          className={styles.modalBackdrop}
+          onClick={() => setDetailsTrip(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <strong>{detailsTrip.title}</strong>
+              <button
+                className={styles.modalClose}
+                aria-label="Zamknij"
+                onClick={() => setDetailsTrip(null)}
+              >
+                ×
+              </button>
+            </div>
+            <img
+              className={styles.modalImg}
+              src={detailsTrip.imageUrl}
+              alt={detailsTrip.title}
+            />
+          </div>
+        </div>
       )}
     </div>
   );
