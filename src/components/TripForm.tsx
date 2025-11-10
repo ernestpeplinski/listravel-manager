@@ -493,15 +493,9 @@ export const TripForm: React.FC<TripFormProps> = ({
               <button
                 type="button"
                 className={styles.submitButton}
-                onClick={() => {
-                  const form = document.querySelector(
-                    `.${styles.form}`
-                  ) as HTMLFormElement;
-                  if (form) {
-                    form.dispatchEvent(
-                      new Event("submit", { cancelable: true, bubbles: true })
-                    );
-                  }
+                onClick={async (e) => {
+                  e.preventDefault();
+                  await handleSubmit(e as React.FormEvent<HTMLButtonElement>);
                 }}
                 disabled={uploading || !!dateError}
               >
